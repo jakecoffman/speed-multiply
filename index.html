@@ -424,6 +424,7 @@
   let questionStart = 0;
   let timerInterval = null;
   let results = []; // { a, b, correct, given, time, isCorrect }
+  let locked = false; // block input during transitions
 
   // --- Helpers ---
   function showScreen(screen) {
@@ -511,11 +512,14 @@
     currentAnswer = '';
     updateAnswerDisplay();
     progressFill.style.width = ((currentIndex / problems.length) * 100) + '%';
+    // Start timer and unlock input only after problem is visible
     startTimer();
+    locked = false;
   }
 
   function submitAnswer() {
-    if (currentAnswer === '') return;
+    if (locked || currentAnswer === '') return;
+    locked = true;
     const elapsed = stopTimer();
     const [a, b] = problems[currentIndex];
     const correct = a * b;
@@ -640,6 +644,7 @@
 
   // Numpad buttons
   document.getElementById('numpad').addEventListener('click', (e) => {
+    if (locked) return;
     const btn = e.target.closest('.num-btn');
     if (!btn) return;
     const val = btn.dataset.val;
@@ -660,7 +665,7 @@
 
   // Keyboard support (for parents testing 😉)
   document.addEventListener('keydown', (e) => {
-    if (!screenQuiz.classList.contains('active')) return;
+    if (!screenQuiz.classList.contains('active') || locked) return;
     if (e.key >= '0' && e.key <= '9') {
       if (currentAnswer.length < 3) {
         currentAnswer += e.key;
@@ -683,6 +688,11 @@
 </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
