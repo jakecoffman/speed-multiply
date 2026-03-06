@@ -191,7 +191,6 @@
     min-height: 48px;
     cursor: pointer;
     touch-action: manipulation;
-    -webkit-user-select: none;
     transition: all 0.12s;
   }
   .num-btn:hover { background: var(--btn-hover); }
@@ -654,7 +653,7 @@
     if (locked) return;
     const btn = e.target.closest('.num-btn');
     if (!btn) return;
-    e.preventDefault(); // prevent subsequent click/focus events
+    if (e.pointerType !== 'mouse') e.preventDefault(); // prevent duplicate events on touch/pen
     const val = btn.dataset.val;
 
     if (val === 'del') {
